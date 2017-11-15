@@ -250,6 +250,11 @@ public class NcwmsAdminServlet extends HttpServlet {
         }
     }
     
+    /*
+     * Look for the new datasets. The logic below means that we don't
+     * have to know in advance how many new datasets the user has created
+     * (or how many spaces were available in the admin page)
+     */
     private void addData(HttpServletRequest request, HttpServletResponse response) {
     	 int i = 0;
          while (request.getParameter("dataset.new" + i + ".id") != null) {
@@ -376,40 +381,9 @@ public class NcwmsAdminServlet extends HttpServlet {
              */
             ds.forceRefresh();
         }
-
-        /*
-         * Now look for the new datasets. The logic below means that we don't
-         * have to know in advance how many new datasets the user has created
-         * (or how many spaces were available in the admin page)
-         */
-        int i = 0;
-        while (request.getParameter("dataset.new" + i + ".id") != null) {
-            /* Look for non-blank ID fields */
-            String id = request.getParameter("dataset.new" + i + ".id");
-            if (id != null && !id.trim().equals("")) {
-                DatasetConfig ds = new DatasetConfig();
-                ds.setId(id);
-                String title = request.getParameter("dataset.new" + i + ".title");
-                if (title == null || title.trim().equals("")) {
-                    title = id;
-                }
-                ds.setTitle(title);
-                ds.setLocation(request.getParameter("dataset.new" + i + ".location"));
-                ds.setDataReaderClass(request.getParameter("dataset.new" + i + ".reader"));
-                ds.setDisabled(request.getParameter("dataset.new" + i + ".disabled") != null);
-                ds.setQueryable(request.getParameter("dataset.new" + i + ".queryable") != null);
-                ds.setUpdateInterval(Integer.parseInt(request.getParameter("dataset.new" + i
-                        + ".updateinterval")));
-                ds.setMoreInfo(request.getParameter("dataset.new" + i + ".moreinfo"));
-                ds.setCopyrightStatement(request.getParameter("dataset.new" + i + ".copyright"));
-                /*
-                 * addDataset() contains code to ensure that the dataset loads
-                 * its metadata at the next opportunity
-                 */
-                catalogue.getConfig().addDataset(ds);
-            }
-            i++;
-        }
+        
+        /* Look for new datasets */
+        addData(request, response);
 
         List<NcwmsDynamicService> dynamicServicesToRemove = new ArrayList<NcwmsDynamicService>();
         /*
