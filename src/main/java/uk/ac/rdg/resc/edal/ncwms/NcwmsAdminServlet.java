@@ -448,7 +448,7 @@ public class NcwmsAdminServlet extends HttpServlet {
          * don't have to know in advance how many new dynamic Services the user
          * has created (or how many spaces were available in the admin page)
          */
-        i = 0;
+        int i = 0;
         while (request.getParameter("dynamicService.new" + i + ".alias") != null) {
             /*
              * Look for non-blank alias fields
